@@ -43,6 +43,9 @@ public protocol CGMManagerDelegate: class, DeviceManagerDelegate {
     ///
     /// - Parameter manager: The manager instance
     func cgmManagerDidUpdateState(_ manager: CGMManager)
+    
+    /// Asks the delegate for credential store prefix to avoid namespace conflicts
+    func credentialStoragePrefix(for manager: CGMManager) -> String
 }
 
 
@@ -63,7 +66,7 @@ public protocol CGMManager: DeviceManager {
 
     /// The representation of the device for use in HealthKit
     var device: HKDevice? { get }
-
+    
     /// Performs a manual fetch of glucose data from the device, if necessary
     ///
     /// - Parameters:
@@ -86,5 +89,5 @@ public extension CGMManager {
             self.cgmManagerDelegate?.cgmManagerWantsDeletion(self)
             completion()
         }
-    }
+    }    
 }
