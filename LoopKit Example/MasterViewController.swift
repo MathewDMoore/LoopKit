@@ -265,6 +265,7 @@ class MasterViewController: UITableViewController {
 
                     let group = DispatchGroup()
 
+                    // Reservoir data
                     var unitVolume = 150.0
 
                     reservoir: for index in sequence(first: TimeInterval(hours: -6), next: { $0 + .minutes(5) }) {
@@ -279,7 +280,16 @@ class MasterViewController: UITableViewController {
                             group.leave()
                         }
                     }
+                    
+                    // Insulin doses
+                    let now = Date()
+                    let bolus = NewPumpEvent(date: now + 5, dose: DoseEntry(type: .bolus, startDate: now, endDate: now + 10, value: 1.0, unit: .units, deliveredUnits: 1, description: "Test Bolus", syncIdentifier: "Test Bolus", scheduledBasalRate: nil), isMutable: false, raw: Data(), title: "Test 1.0 U Bolus")
+                    group.enter()
+                    dataManager.doseStore.addPumpEvents([bolus], lastReconciliation: now) { (error) in
+                        group.leave()
+                    }
 
+                    // Glucose data
                     group.enter()
                     dataManager.glucoseStore.addGlucose(NewGlucoseSample(date: Date(), quantity: HKQuantity(unit: .milligramsPerDeciliter, doubleValue: 101), isDisplayOnly: false, syncIdentifier: UUID().uuidString), completion: { (result) in
                         group.leave()
